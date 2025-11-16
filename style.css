@@ -409,3 +409,40 @@ body {
   font-size: 0.85rem;
   color: #555;
 }
+
+/* ============================================
+   v0.5: UX 개선 (Alert 제거)
+============================================ */
+
+/* 1. 버튼 '흔들림' 애니메이션 (실패 시) */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-8px); }
+  20%, 40%, 60%, 80% { transform: translateX(8px); }
+}
+
+.action-btn.shake {
+  animation: shake 0.6s ease-in-out;
+  background-color: #dc3545; /* 붉은색 */
+  border-color: #dc3545;
+}
+
+/* 2. '성공' 상태 스타일 (성공 시) */
+.action-btn.success {
+  background-color: #28a745; /* 초록색 */
+  border-color: #28a745;
+  color: white;
+  cursor: default;
+}
+
+/* 3. '잠금' 상태 스타일 (성공 시) */
+.canvas-section.locked {
+  opacity: 0.7;
+  pointer-events: none; /* 클릭, 드래그 등 모든 이벤트 차단 */
+}
+
+#captcha-canvas.locked,
+#preview-canvas.locked {
+  cursor: default;
+  touch-action: none;
+}

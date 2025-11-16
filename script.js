@@ -534,9 +534,11 @@ function resizeRendererToDisplaySize() {
 const verifyButton = document.getElementById("verify-btn");
 const refreshButton = document.getElementById("refresh-btn");
 
+// [v0.5 수정] script.js의 verifyButton.addEventListener 함수 전체를 이걸로 교체하세요.
+
 verifyButton.addEventListener("click", async () => {
-  if (!interactiveObject || !previewObject) {
-    alert("⏳ Model is loading. Please wait a moment.");
+  if (!interactiveObject || !previewObject || verifyButton.disabled) {
+    // 이미 성공했거나 로딩 중이면 클릭 무시
     return;
   }
 
@@ -549,22 +551,26 @@ verifyButton.addEventListener("click", async () => {
         z: interactiveObject.rotation.z
       };
 
+      // [v0.5] 검증 시작 시 버튼 비활성화 (중복 클릭 방지)
+      verifyButton.disabled = true;
+      verifyButton.textContent = "Verifying...";
+
       const response = await captchaAPI.verifyCaptcha(currentSessionId, userRotation);
       
       if (response.verified) {
-        alert(`✅ Success — You are human! 🎉\n(Error: ${response.error_angle.toFixed(1)}°)`);
-        // Generate new challenge after success
-        setTimeout(() => generateRandomChallenge(), 500);
+        // [v0.5] 성공!
+        showVerificationResult(true); // 성공 UI 표시
       } else {
-        alert(`❌ Try Again\n(Current error: ${response.error_angle.toFixed(1)}° / Allowed: ${response.tolerance}°)\n\n💡 Tip: ${isTouchDevice ? 'Enable Slow Motion Mode for easier control!' : 'Match the target orientation on the right!'}`);
+        // [v0.5] 실패!
+        showVerificationResult(false); // 실패 UI (흔들림) 표시
       }
     } catch (error) {
-      alert(`❌ 검증 실패: ${error.message}`);
       console.error('Verification error:', error);
+      // [v0.5] API 통신 자체에 실패해도 '실패'로 간주
+      showVerificationResult(false);
     }
   } 
   // else 블록이 삭제되어 로컬 검증 보안 허점이 제거되었습니다.
-  // API 인증 실패 시(currentSessionId가 null일 때) 아무 일도 일어나지 않습니다.
 });
 
 // Refresh button to generate new challenge
@@ -736,6 +742,41 @@ function initialize() {
   };
   
   waitForDimensions();
+}
+
+// [v0.5 추가] script.js 파일 맨 마지막에 추가하세요.
+
+/**
+ * v0.5: 검증 결과를 팝업(alert) 대신 UI로 표시합니다.
+ * @param {boolean} isSuccess - 검증 성공 여부
+ */
+function showVerificationResult(isSuccess) {
+  if (isSuccess) {
+    // --- 성공 ---
+    verifyButton.classList.remove('shake');
+    verifyButton.classList.add('success'); // 초록색 'success' 클래스 추가
+    verifyButton.textContent = '✓ Success!';
+    verifyButton.disabled = true; // 버튼 영구 비활성화
+    
+    // 3D 캔버스 조작을 '잠금'
+    const mainCanvasSection = document.querySelector('.canvas-section.main-canvas');
+    if (mainCanvasSection) {
+      mainCanvasSection.classList.add('locked');
+    }
+    canvas.classList.add('locked');
+
+  } else {
+    // --- 실패 ---
+    verifyButton.classList.add('shake'); // 'shake' (흔들림) 클래스 추가
+    verifyButton.textContent = '✗ Try Again';
+    
+    // 0.6초 (애니메이션 시간) 후에 버튼을 원래대로 되돌림
+    setTimeout(() => {
+      verifyButton.classList.remove('shake');
+      verifyButton.textContent = '✓ Verify Human';
+      verifyButton.disabled = false; // 버튼 다시 활성화
+    }, 600);
+  }
 }
 
 // Start initialization when DOM is ready
