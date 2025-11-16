@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="3D Spatial CAPTCHA - Rotate 3D objects to verify you are human" />
+    <meta name="keywords" content="captcha, 3d, spatial, security, verification" />
+    <title>Spatial CAPTCHA - 3D Human Verification</title>
+    <link rel="stylesheet" href="style.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <main class="app">
+      <h1 class="app__title">🔐 Rotate the 3D Object to Match the Target</h1>
+      
+      <div class="captcha-container">
+        <section class="canvas-section main-canvas">
+          <div class="canvas-label">
+            <span class="label-icon">🎮</span>
+            <span>Drag to Rotate</span>
+          </div>
+          <div class="accuracy-indicator" id="accuracy-indicator">
+            <div class="accuracy-bar-container">
+              <div class="accuracy-bar" id="accuracy-bar"></div>
+            </div>
+            <div class="accuracy-text" id="accuracy-text">Error: --°</div>
+          </div>
+          <canvas id="captcha-canvas"></canvas>
+        </section>
+        
+        <section class="canvas-section preview-canvas">
+          <div class="canvas-label target-label">
+            <span class="label-icon">🎯</span>
+            <span>Target Orientation</span>
+          </div>
+          <canvas id="preview-canvas"></canvas>
+        </section>
+      </div>
+      
+      <div class="mobile-helper">
+        <div class="drag-mode-toggle">
+          <label class="toggle-label">
+            <input type="checkbox" id="slow-mode-toggle" />
+            <span class="toggle-slider"></span>
+            <span class="toggle-text">🐢 Slow Motion Mode (easier on mobile)</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="fine-control-panel">
+        <h3 class="control-title">⚙️ Fine Control <span class="desktop-hint">(Keyboard or Buttons)</span></h3>
+        <div class="control-grid">
+          <div class="control-group">
+            <label>X-Axis Rotation</label>
+            <div class="control-buttons">
+              <button class="control-btn" data-axis="x" data-direction="-1">◀ Up</button>
+              <button class="control-btn" data-axis="x" data-direction="1">▶ Down</button>
+            </div>
+            <div class="keyboard-hint">Keyboard: W / S</div>
+          </div>
+          <div class="control-group">
+            <label>Y-Axis Rotation</label>
+            <div class="control-buttons">
+              <button class="control-btn" data-axis="y" data-direction="-1">◀ Left</button>
+              <button class="control-btn" data-axis="y" data-direction="1">▶ Right</button>
+            </div>
+            <div class="keyboard-hint">Keyboard: A / D</div>
+          </div>
+          <div class="control-group">
+            <label>Z-Axis Rotation</label>
+            <div class="control-buttons">
+              <button class="control-btn" data-axis="z" data-direction="-1">◀ CCW</button>
+              <button class="control-btn" data-axis="z" data-direction="1">▶ CW</button>
+            </div>
+            <div class="keyboard-hint">Keyboard: Q / E</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="button-group">
+        <button id="refresh-btn" class="action-btn refresh-btn" type="button">
+          🔄 New Challenge
+        </button>
+        <button id="verify-btn" class="action-btn verify-btn" type="button">
+          ✓ Verify Human
+        </button>
+      </div>
+    </main>
+    <script type="module" src="script.js"></script>
+  </body>
+</html>
+
